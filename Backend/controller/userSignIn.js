@@ -27,9 +27,7 @@ async function userSignInController(req, res) {
                 _id:user.id,
                 email:user.email,
             }
-           const token = jwt.sign({
-                tokenData,
-              },process.env.TOKEN_SECRET_KEY,{ expiresIn: '8h' });
+            const token =await jwt.sign(tokenData,process.env.TOKEN_SECRET_KEY,{expiresIn:60 *60 * 8});
 
             const tokenOption={
                 httpOnly:true,
@@ -40,7 +38,7 @@ async function userSignInController(req, res) {
                 message: "user login successfully",
                 error: false,
                 success: true,
-                data: user
+                data: token
             });
             
         }else{

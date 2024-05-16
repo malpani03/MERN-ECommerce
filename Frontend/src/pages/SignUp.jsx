@@ -59,11 +59,8 @@ const SignUp = () => {
             }
 
         }else{
-            
-        }
-
-        
-        
+            toast.error('Please check password & confirm password')
+        }  
     };
 
     return (

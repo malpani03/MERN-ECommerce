@@ -4,12 +4,14 @@ require('dotenv').config();
 const connectDB = require('./config/db');
 const router = require('./routes');
 const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser');
 
 const app = express();
 app.use(cors({
   origin:process.env.FRONT_END_URL,
   credentials: true
 }));
+app.use(bodyParser.json({ limit: '10mb' }));
 app.use(cookieParser())
 app.use(express.json());
 app.use("/api", router);

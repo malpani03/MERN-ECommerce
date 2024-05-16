@@ -1,4 +1,5 @@
 import { Outlet } from "react-router-dom";
+import './App.css';
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import { ToastContainer } from "react-toastify";
@@ -6,30 +7,34 @@ import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
 import SummaryApi from "./common";
 import Context from "./context";
+import {useDispatch} from 'react-redux'
+import { setUserDetails } from "./store/userSlice";
+
 
 const App = () => {
+  const dispatch = useDispatch()
   const fetchUserDetails = async () => {
-    try {
-      const dataResponse = await fetch(SummaryApi.current_user.url, {
-        method: SummaryApi.current_user.method,
-        credentials: "include",
-      });
+    const dataResponse = await fetch(SummaryApi.current_user.url, {
+      method: SummaryApi.current_user.method,
+      credentials: "include",
+    });
 
-      const dataApi = await dataResponse.json();
-      console.log("data-user", dataApi);
-    } catch (error) {
-      console.error("Error fetching user details:", error);
-    }
+    const dataApi = await dataResponse.json()
+
+      if(dataApi.success){
+        dispatch(setUserDetails(dataApi.data))
+      }
   };
 
   useEffect(() => {
+    //user details
     fetchUserDetails();
-  }, []);
+  },[]);
 
   return (
     <>
     <Context.Provider value={{
-      fetchUserDetails
+      fetchUserDetails //user details fetch
     }}>
       <ToastContainer />
       <Header />
