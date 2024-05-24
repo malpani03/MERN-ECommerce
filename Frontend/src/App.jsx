@@ -4,44 +4,61 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import SummaryApi from "./common";
 import Context from "./context";
-import {useDispatch} from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
 import { setUserDetails } from "./store/userSlice";
 
-
 const App = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const [cartProductCount,setCartProductCount]=useState(0)
+  const userDetails = useSelector((state) => state.user.user);
+
   const fetchUserDetails = async () => {
     const dataResponse = await fetch(SummaryApi.current_user.url, {
       method: SummaryApi.current_user.method,
       credentials: "include",
     });
 
-    const dataApi = await dataResponse.json()
+    const dataApi = await dataResponse.json();
 
-      if(dataApi.success){
-        dispatch(setUserDetails(dataApi.data))
-      }
+    if (dataApi.success) {
+      dispatch(setUserDetails(dataApi.data));
+    }
+  };
+
+  const fetchUserAddToCart=async () => {
+    const dataResponse = await fetch(SummaryApi.addToCartProductCount.url, {
+      method: SummaryApi.addToCartProductCount.method,
+      credentials: "include",
+    });
+
+    const dataApi = await dataResponse.json();
+
+    console.log("count",dataApi)
+    setCartProductCount(dataApi?.data?.count)
   };
 
   useEffect(() => {
-    //user details
-    fetchUserDetails();
-  },[]);
+    if (!userDetails) {
+      fetchUserDetails();
+    }
+  }, [userDetails]);
+
+  useEffect(()=>{
+    fetchUserAddToCart();
+  },[])
 
   return (
     <>
-    <Context.Provider value={{
-      fetchUserDetails //user details fetch
-    }}>
-      <ToastContainer />
-      <Header />
-      <main className="min-h-[calc(100vh-130px)]">
-        <Outlet />
-      </main>
-      <Footer />
+      <Context.Provider value={{ fetchUserDetails,fetchUserAddToCart,cartProductCount }}>
+        <ToastContainer position="top-center"/>
+        <Header />
+        <main className="min-h-[calc(100vh-130px)] pt-16">
+          <Outlet />
+        </main>
+        <Footer />
       </Context.Provider>
     </>
   );

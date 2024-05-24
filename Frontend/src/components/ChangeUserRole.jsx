@@ -59,7 +59,7 @@ const ChangeUserRole = ({
              <p>Email : {email}</p> 
 
             <div className='flex items-center justify-between my-4'>
-                <p>Role :</p>  
+                <p>Role : {role}</p>  
                 <select className='border px-4 py-1' value={userRole} onChange={handleOnChangeSelect}>
                     {
                         Object.values(ROLE).map(el => {
