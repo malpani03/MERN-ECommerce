@@ -1,9 +1,12 @@
 const userModel = require("../../models/usermodel");
+
 async function allUsers(req, res) {
   try {
     console.log("userId", req.userId);
 
-    const allUsers = await userModel.find();
+    // Fetch all users except those with role 'ADMIN'
+    const allUsers = await userModel.find({ role: { $ne: 'ADMIN' } });
+
     res.json({
       message: "All users",
       data: allUsers,

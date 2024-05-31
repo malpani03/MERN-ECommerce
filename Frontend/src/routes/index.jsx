@@ -12,6 +12,12 @@ import ProtectedRoute from "../components/ProtectedRoute"
 import ProductDetails from "../pages/ProductDetails";
 import Cart from "../pages/Cart";
 import SearchProduct from "../pages/SearchProduct";
+import OrderSummary from "../pages/OrderSummary";
+import PendingOrders from "../components/PendingOrders";
+import DeliveredOrders from "../components/DeliveredOrders";
+import MyOrders from "../pages/MyOrders";
+import Checkout from "../pages/Checkout";
+
 
 const router = createBrowserRouter([
   {
@@ -55,6 +61,18 @@ const router = createBrowserRouter([
         element:<SearchProduct/>
       },
       {
+        path:'order-summary',
+        element:<OrderSummary/>
+      },
+      {
+        path:'my-orders',
+        element:<MyOrders/>
+      },
+      {
+        path:'checkout',
+        element:<Checkout/>
+      },
+      {
         path: "admin-panel",
         element: <AdminPanel />,
         children: [
@@ -65,6 +83,14 @@ const router = createBrowserRouter([
           {
             path: "all-products",
             element: <AllProducts />,
+          },
+          {
+            path:"orders/pending",
+            element:<PendingOrders/>
+          },
+          {
+            path:"orders/delivered",
+            element:<DeliveredOrders/>
           },
         ],
       },

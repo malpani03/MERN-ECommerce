@@ -1,16 +1,19 @@
-import { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import SummaryApi from "../common";
 import Context from "../context";
 import displayINRCurrency from "../helpers/displayCurrency";
 import { MdDelete } from "react-icons/md";
+import { toast } from "react-toastify";
 
 const Cart = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const context = useContext(Context);
-  const loadingCart = new Array(context.cartProductCount).fill(null);
   const navigate = useNavigate();
+
+  const user = useSelector((state) => state.user.user); // Fetching user from Redux store
 
   const fetchData = async () => {
     try {
@@ -18,27 +21,26 @@ const Cart = () => {
         method: SummaryApi.addToCartProductView.method,
         credentials: "include",
         headers: {
-          "content-Type": "application/json",
+          "Content-Type": "application/json",
         },
       });
       const responseData = await response.json();
       if (responseData.success) {
         setData(responseData.data);
       }
-      console.log(responseData);
     } catch (error) {
       console.error("Error fetching data:", error);
-    } finally {
     }
   };
-  const handleLoading =async()=>{
+
+  const handleLoading = async () => {
     await fetchData();
-  }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    setLoading(true)
-    handleLoading()
-    setLoading(false)
+    setLoading(true);
+    handleLoading();
   }, []);
 
   const increaseQty = async (id, qty) => {
@@ -46,7 +48,7 @@ const Cart = () => {
       method: SummaryApi.updateCartProduct.method,
       credentials: "include",
       headers: {
-        "content-type": "application/json",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         _id: id,
@@ -67,7 +69,7 @@ const Cart = () => {
         method: SummaryApi.updateCartProduct.method,
         credentials: "include",
         headers: {
-          "content-type": "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           _id: id,
@@ -88,7 +90,7 @@ const Cart = () => {
       method: SummaryApi.deleteCartProduct.method,
       credentials: "include",
       headers: {
-        "content-type": "application/json",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ _id: productId }),
     });
@@ -104,26 +106,8 @@ const Cart = () => {
   const totalQuantity = data.reduce((total, product) => total + product.quantity, 0);
   const totalPrice = data.reduce((total, product) => total + (product.productId?.sellingPrice ?? 0) * product.quantity, 0);
 
-  const handlePayment = async () => {
-    const user = context.user; // Assuming user information is stored in the context
-    const response = await fetch('/api/orders', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user,
-        products: data,
-        totalAmount: totalPrice,
-      }),
-    });
-
-    const result = await response.json();
-    if (result.success) {
-      alert(`Order placed successfully! Order ID: ${result.orderId}`);
-    } else {
-      alert('Failed to place order');
-    }
+  const handleCheckout = () => {
+    navigate('/checkout', { state: { cartItems: data, totalPrice } });
   };
 
   return (
@@ -142,7 +126,7 @@ const Cart = () => {
       <div className='flex flex-col lg:flex-row gap-10 lg:justify-between p-4'>
         <div className='w-full max-w-3xl'>
           {loading ? (
-            loadingCart.map((el, index) => (
+            Array.from({ length: context.cartProductCount }).map((_, index) => (
               <div key={index} className='w-full bg-slate-200 h-32 my-2 border border-slate-300 animate-pulse rounded'></div>
             ))
           ) : (
@@ -194,7 +178,7 @@ const Cart = () => {
                 <p>Total Price</p>
                 <p>{displayINRCurrency(totalPrice)}</p>
               </div>
-              <button className='bg-blue-600 p-2 text-white w-full mt-2' onClick={handlePayment}>Payment</button>
+              <button className='bg-blue-600 p-2 text-white w-full mt-2' onClick={handleCheckout}>Checkout</button>
             </div>
           </div>
         )}

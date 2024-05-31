@@ -42,7 +42,7 @@ const BannerProduct = () => {
 
   return (
     <div className="container mx-auto px-4 rounded">
-      <div className="h-64 md:h-80 w-full bg-slate-200 relative">
+      <div className="h-64 md:h-96 w-full bg-slate-200 relative">
         <div className="absolute z-10 w-full h-full md:flex items-center hidden">
           <div className="flex justify-between w-full text-2xl">
             <button className="bg-white shadow-md rounded-full p-1" onClick={prevImage}>

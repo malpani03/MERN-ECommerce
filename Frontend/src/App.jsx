@@ -13,7 +13,7 @@ import { setUserDetails } from "./store/userSlice";
 const App = () => {
   const dispatch = useDispatch();
   const [cartProductCount,setCartProductCount]=useState(0)
-  const userDetails = useSelector((state) => state.user.user);
+  const user = useSelector((state) => state.user.user);
 
   const fetchUserDetails = async () => {
     const dataResponse = await fetch(SummaryApi.current_user.url, {
@@ -36,15 +36,14 @@ const App = () => {
 
     const dataApi = await dataResponse.json();
 
-    console.log("count",dataApi)
     setCartProductCount(dataApi?.data?.count)
   };
 
   useEffect(() => {
-    if (!userDetails) {
+    if (!user) {
       fetchUserDetails();
     }
-  }, [userDetails]);
+  }, [user]);
 
   useEffect(()=>{
     fetchUserAddToCart();

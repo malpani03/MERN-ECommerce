@@ -1,15 +1,13 @@
-import Logo from "./Logo";
-import { FaRegUserCircle } from "react-icons/fa";
-import { FaShoppingCart } from "react-icons/fa";
+import { FaRegUserCircle, FaShoppingCart } from "react-icons/fa";
+import { CiSearch } from "react-icons/ci";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from "react-redux";
 import SummaryApi from "../common";
 import { toast } from 'react-toastify';
-import { setUserDetails, logout } from "../store/userSlice";
+import { logout } from "../store/userSlice";
 import { useContext, useState, useEffect } from "react";
 import ROLE from '../common/role';
 import Context from "../context";
-import { CiSearch } from "react-icons/ci";
 
 const Header = () => {
   const user = useSelector(state => state.user?.user);
@@ -34,7 +32,7 @@ const Header = () => {
     if (data.success) {
       toast.success(data.message);
       dispatch(logout());
-      navigate('/') // Dispatch the logout action
+      navigate('/');
     } else {
       toast.error(data.message);
     }
@@ -53,12 +51,10 @@ const Header = () => {
   return (
     <header className="h-16 shadow-md bg-white fixed w-full z-40">
       <div className="h-full container mx-auto flex items-center px-4 justify-between">
-        <div>
-          <Link to={"/"}>
-            <Logo />
-          </Link>
-        </div>
-        <div className='hidden lg:flex items-center w-full justify-between max-w-sm border rounded-full focus-within:shadow pl-2'>
+        <Link to="/" className="text-2xl font-bold text-red-600">
+          ByteBazaar
+        </Link>
+        <div className='hidden lg:flex items-center w-full max-w-sm border rounded-full focus-within:shadow pl-2'>
           <input 
             type='text' 
             placeholder='Search Product here' 
@@ -90,10 +86,19 @@ const Header = () => {
                   {user?.role === ROLE.ADMIN && (
                     <Link 
                       to={"/admin-panel/all-products"} 
-                      className='whitespace-nowrap hidden md:block hover:bg-slate-100 p-2' 
-                      onClick={() => setMenuDisplay(prev => !prev)}
+                      className='whitespace-nowrap hover:bg-slate-100 p-2' 
+                      onClick={() => setMenuDisplay(false)}
                     >
                       Admin Panel
+                    </Link>
+                  )}
+                  {user?.role !== ROLE.ADMIN && (
+                    <Link 
+                      to={"/my-orders"} 
+                      className='whitespace-nowrap hover:bg-slate-100 p-2' 
+                      onClick={() => setMenuDisplay(false)}
+                    >
+                      My Orders
                     </Link>
                   )}
                 </nav>
@@ -101,7 +106,7 @@ const Header = () => {
             )}
           </div>
           {user?._id && (
-            <Link to={"/cart"} className="text:3xl relative">
+            <Link to={"/cart"} className="text-3xl relative">
               <span>
                 <FaShoppingCart />
               </span>
